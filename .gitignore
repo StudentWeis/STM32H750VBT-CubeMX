@@ -1,3 +1,4 @@
 */MDK-ARM/*
 !*.uvprojx
-.vscode/
+!*.s
+.vscode/w

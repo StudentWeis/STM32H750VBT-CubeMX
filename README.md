@@ -26,11 +26,11 @@ Keil 版本：5.32
 
 **简介**：后续任务的模板，使用 USB 打印。
 
-**外设**：GPIO、USBFS
+**外设**：GPIO、USBFS CDC 
 
 **参考**：https://www.sunev.cn/embedded/732.html
 
-**问题记录**：
+**心得**：
 
 - CubeMX 时钟配置出错，显示：“Frequency searched for is out of range for this VOS range"。
 
@@ -59,7 +59,7 @@ Keil 版本：5.32
 
 **外设**：DCMI、I2C、UART
 
-**问题记录**：
+**心得**：
 
 - 花了好久才把厂家给的例程跑通，但是例程不是 CubeMX 的，感觉不太方便，不好添加新功能，就想着移植到 CubeM 上。
 
@@ -76,11 +76,11 @@ Keil 版本：5.32
 
 ### 任务 02
 
-**简介**：使用 DCMI+I2C 驱动 OV2640，通过 USBFS 将图像传到电脑上。
+**简介**：使用 DCMI+I2C 驱动 OV2640，通过 USBFS CDC 将图像传到电脑上。
 
 **外设**：DCMI、I2C、USBFS 
 
-**问题记录**：
+**心得**：
 
 - 发送数据不精确，无法定位 JPEG 的头和尾。
 
@@ -94,6 +94,44 @@ Keil 版本：5.32
 
 ### 任务 03
 
-**简介**：
+**简介**：通过 SDMMC + FatFS 读写 SD 卡，通过 UART 与电脑通信。
 
-**外设**：
+**外设**：UART、SDMMC、FatFs
+
+**心得**：
+
+- H7 的 SD 卡接口不叫 SDIO，叫作 SDMMC，需要注意，且内置 DMA，无需再设置。
+
+- H7 在设置时要注意将 SDMMC 除了 SDMMC_CK 之外的所有引脚全部改为 Pull Up，否则无法读写。因为开发板上的 SD 卡引脚没有上拉。
+
+  **参考**：https://blog.csdn.net/qq_40708778/article/details/117995976
+
+- SDMMC 的时钟频率别设太大，不能超过 SD 卡的上限。
+
+- 问题：编译的时候遇到报错：`No space in execution regions with .ANY selector matching`。
+
+  **原因**：空间不够大。
+
+  参考：https://blog.csdn.net/Mark_md/article/details/108386706
+
+  分析：FatFs 中文文件名所占 Flash 很大 170 多 KB。
+
+  解决：取消中文支持，选择 U.S.
+
+- 文件名要加盘符，例如：`0:c`
+
+### 任务 04
+
+**简介**：通过 SDIO + FatFS 读写 SD 卡，通过 USBFS CDC 与电脑通信。
+
+**外设**：USBFS CDC、SDIO、FatFs
+
+**心得**：堆栈配置大一点。
+
+### 任务 05
+
+**简介**：使用 DCMI + I2C 驱动 OV2640 拍摄照片，通过 SDMMC + FatFs 将照片写到 SD 卡中；通过 USBFS CDC 与电脑通信。
+
+**外设**：DCMI、I2C、SDMMC、FatFs、USBFS CDC
+
+**心得**：
