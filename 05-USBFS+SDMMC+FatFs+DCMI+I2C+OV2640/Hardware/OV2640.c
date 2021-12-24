@@ -3,6 +3,9 @@
 #include "string.h"
 #include "usbd_cdc_if.h"
 
+#include "fatfs.h"
+#include "sdmmc.h"
+
 #define pictureBufferLength 1024 * 10
 static uint32_t JpegBuffer[pictureBufferLength];
 
@@ -213,7 +216,6 @@ void StartOV2640()
     HAL_DCMI_Start_DMA(DCMI_hdcmi, DCMI_MODE_SNAPSHOT, (uint32_t)JpegBuffer, pictureBufferLength); // 启动拍照
 }
 
-
 extern uint8_t jpgok;
 
 void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
@@ -237,7 +239,13 @@ void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
             break;
         }
     }
-    jpgp += jpgstart; 
-    CDC_Transmit_FS(jpgp, jpglen);
+    jpgp += jpgstart;
+
+    /* 写入 SD 卡 */
+    uint32_t byteswritten;                               
+    char filename2[] = "0:t.jpg";
+    retSD = f_open(&SDFile, filename2, FA_CREATE_ALWAYS | FA_WRITE);
+    retSD = f_write(&SDFile, jpgp, jpglen, (void *)&byteswritten);
+    retSD = f_close(&SDFile);
     jpgok = 1;
 }

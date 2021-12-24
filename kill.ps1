@@ -10,6 +10,7 @@ Get-ChildItem * -Include *.o -Recurse | Remove-Item
 Get-ChildItem * -Include *.sct -Recurse | Remove-Item
 Get-ChildItem * -Include *.lst -Recurse | Remove-Item
 Get-ChildItem * -Include *.Bak -Recurse | Remove-Item
+Get-ChildItem * -Include *.hex -Recurse | Remove-Item
 
 # Keil 工程输出
 
